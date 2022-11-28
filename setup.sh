@@ -72,7 +72,7 @@ install_apps(){
 put_settings(){
 	$dpi 279
 	$sett secure "bluetooth_name" "MoTooth"
-	$sett global "private_dns_specifier" "family.adguard-dns.com"
+	$sett global "private_dns_specifier" "dns.adguard.com"
 	$sett global "private_dns_mode" "on"
 	$sett global "device_name" "MotoPhone"
 }
