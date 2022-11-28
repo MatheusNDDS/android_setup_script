@@ -11,7 +11,7 @@ load_data(){
 	rm="rm -rf"
 #reference data
 #[i]: Main program strings, lists and variables.
-	out_file="$HOME/.cache/temp"
+	out_file="$HOME/.temp"
 	perms=(
 		"android.permission"
 		"DUMP"
