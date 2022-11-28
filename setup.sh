@@ -53,8 +53,8 @@ live_shell(){
 	done
 }
 set_perm(){
-args=($*) #standard arguents alocation
-	for i in ${args[@]:1}
+sp_a=($*) #standard arguents alocation
+	for i in ${sp_a[@]:1}
 	do
 		$pm_grant $1 "${perms[0]}.${perms[$i]}" 2> $out_file
 		echo "[$1 : ${perms[$i]}]"
