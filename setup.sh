@@ -14,10 +14,13 @@ load_data(){
 	out_file="$HOME/.cache/temp"
 	perms=(
 		"android.permission"
-		"DUMP"
-		"WRITE_SECURE_SETTINGS"
-		"PACKAGE_USAGE_STATS"
-		"WRITE_MEDIA_STORAGE"
+		"DUMP"						#1
+		"WRITE_SECURE_SETTINGS" 	#2
+		"PACKAGE_USAGE_STATS"		#3
+		"WRITE_MEDIA_STORAGE"		#4
+		"READ_EXTERNAL_STOTAGE"		#5
+		"WRITE_EXTERNAL_STOTAGE"	#6
+		
 	)
 	out_file=".temp"
 	apk_list=$(
@@ -89,7 +92,7 @@ setup_apps(){
 	set_perm "io.github.muntashirakon.setedit" 2
 	set_perm "com.asdoi.quicktiles" 1 2
 	set_perm "com.zacharee1.systemuituner" 1 2
-	set_perm "com.cannic.apps.automaticdarktheme" 1
+	set_perm "com.cannic.apps.automaticdarktheme" 2 4 5 6
 }
 
 #Program Start Function
