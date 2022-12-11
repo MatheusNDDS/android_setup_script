@@ -20,7 +20,6 @@ load_data(){
 		"WRITE_MEDIA_STORAGE"		#4
 		"READ_EXTERNAL_STOTAGE"		#5
 		"WRITE_EXTERNAL_STOTAGE"	#6
-		
 	)
 	out_file=".temp"
 	apk_list=$(
