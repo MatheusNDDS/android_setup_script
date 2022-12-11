@@ -11,7 +11,7 @@ load_data(){
 	rm="rm -rf"
 #reference data
 #[i]: Main program strings, lists and variables.
-	out_file="$HOME/.temp"
+	out_file="$HOME/.cache/temp"
 	perms=(
 		"android.permission"
 		"DUMP"
@@ -19,6 +19,7 @@ load_data(){
 		"PACKAGE_USAGE_STATS"
 		"WRITE_MEDIA_STORAGE"
 	)
+	out_file=".temp"
 	apk_list=$(
 		if [ -d apks/ ]
 		then
@@ -28,7 +29,7 @@ load_data(){
 }
 start(){
 load_data $* #[i]: Load all program data
-	touch .temp
+	touch $out_file
 	if [ -z $1 ]
 	then
 		install_apps
@@ -70,11 +71,18 @@ install_apps(){
 	$rm apks/
 }
 put_settings(){
-	$dpi 279
+#	$dpi 280
 	$sett secure "bluetooth_name" "MoTooth"
 	$sett global "private_dns_specifier" "dns.adguard.com"
 	$sett global "private_dns_mode" "on"
 	$sett global "device_name" "MotoPhone"
+	$sett secure I’m "Matheus Dias"
+	$sett secure qs_auto_tiles 0
+	$sett secure sysui_qqs_count 5
+	$swtt secure sysui_rounded_content_padding 21
+	$sett global window_animation_scale 1.05
+	$sett global transition_animation_scale 1.05
+	$sett global animator_duration_scale 1.05
 }
 setup_apps(){
 	set_perm "com.foxdebug.acode" 4
