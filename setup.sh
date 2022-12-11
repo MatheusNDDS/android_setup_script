@@ -89,6 +89,7 @@ setup_apps(){
 	set_perm "io.github.muntashirakon.setedit" 2
 	set_perm "com.asdoi.quicktiles" 1 2
 	set_perm "com.zacharee1.systemuituner" 1 2
+	set_perm "com.cannic.apps.automaticdarktheme" 1
 }
 
 #Program Start Function
