@@ -10,7 +10,7 @@ load_data(){
 	pm_install="adb install"
 	rm="rm -rf"
 #reference data
-#[i]: Main program strings, lists and variables.
+#[i] Main program strings, lists and variables.
 	out_file="$HOME/.cache/temp"
 	perms=(
 		"android.permission"
@@ -43,7 +43,6 @@ load_data $* #[i]: Load all program data
 	else
 		$1
 	fi
-#{!}: This function contain only commands necessary to configure the program and call the other functions.
 }
 
 #Program Functions
@@ -74,10 +73,10 @@ install_apps(){
 }
 put_settings(){
 #	$dpi 280
-	$sett secure "bluetooth_name" "MoTooth"
-	$sett global "private_dns_specifier" "dns.adguard.com"
-	$sett global "private_dns_mode" "on"
-	$sett global "device_name" "MotoPhone"
+	$sett global device_name "MotoPhone"
+	$sett secure bluetooth_name "MoTooth"
+	$sett global private_dns_specifier "dns.adguard.com"
+	$sett global private_dns_mode "on"
 	$sett secure I’m "Matheus Dias"
 	$sett secure qs_auto_tiles 0
 	$sett secure sysui_qqs_count 5
