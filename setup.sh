@@ -1,6 +1,7 @@
 #!/bin/bash
 #WSH Core Functions
 load_data(){
+a=($*)
 #command data
 #[i]: Main program command shortcuts
 	ash="adb shell"
@@ -9,9 +10,13 @@ load_data(){
 	pm_grant="$ash pm grant"
 	pm_install="adb install"
 	rm="rm -rf"
+	pm="pkg"
+	notify="termux-notification $notify_tags --title"
+	pmup="$pm update;$pm upgrade "
 #reference data
 #[i] Main program strings, lists and variables.
-	out_file="$HOME/.cache/temp"
+	out_file=".temp"
+	notify_tags=""
 	perms=(
 		"android.permission"
 		"DUMP"						#1
@@ -21,7 +26,11 @@ load_data(){
 		"READ_EXTERNAL_STOTAGE"		#5
 		"WRITE_EXTERNAL_STOTAGE"	#6
 	)
-	out_file=".temp"
+	deps=(
+		android-tools
+		termux-api
+		man
+	)
 	apk_list=$(
 		if [ -d apks/ ]
 		then
@@ -34,6 +43,7 @@ load_data $* #[i]: Load all program data
 	touch $out_file
 	if [ -z $1 ]
 	then
+		termux_config
 		install_apps
 		setup_apps
 		put_settings
@@ -41,7 +51,7 @@ load_data $* #[i]: Load all program data
 	then
 		live_shell
 	else
-		$1
+		$1 ${a[@]:1}
 	fi
 }
 
@@ -54,6 +64,16 @@ live_shell(){
 		$cmd
 	done
 }
+termux_config(){
+	$pmup
+	for pkg in ${deps[*]}
+	do
+		$pm install $pkg -y
+	done
+	termux-setup-storage
+	termux-api-start
+	$notify "Termux Configurado 👍"
+}
 set_perm(){
 sp_a=($*) #standard arguents alocation
 	for i in ${sp_a[@]:1}
@@ -61,6 +81,7 @@ sp_a=($*) #standard arguents alocation
 		$pm_grant $1 "${perms[0]}.${perms[$i]}" 2> $out_file
 		echo "[$1 : ${perms[$i]}]"
 	done
+	
 }
 install_apps(){
 	cd apks
