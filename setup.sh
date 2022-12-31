@@ -101,7 +101,7 @@ put_settings(){
 	$sett secure I’m "Matheus Dias"
 	$sett secure qs_auto_tiles 0
 	$sett secure sysui_qqs_count 5
-	$swtt secure sysui_rounded_content_padding 21
+	$sett secure sysui_rounded_content_padding 21
 	$sett global window_animation_scale 1.05
 	$sett global transition_animation_scale 1.05
 	$sett global animator_duration_scale 1.05
