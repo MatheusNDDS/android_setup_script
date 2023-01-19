@@ -1,22 +1,41 @@
 #!/bin/bash
-#WSH Core Functions
 load_data(){
 a=($*)
-#command data
-#[i]: Main program command shortcuts
-	ash="adb shell"
-	sett="$ash settings put"
-	dpi="$ash wm density"
-	pm_grant="$ash pm grant"
-	pm_install="adb install"
-	rm="rm -rf"
-	pm="pkg"
-	notify="termux-notification $notify_tags --title"
-	pmup="$pm update;$pm upgrade "
-#reference data
-#[i] Main program strings, lists and variables.
-	out_file=".temp"
-	notify_tags=""
+## REFEREMCES ##
+  #Apps
+	google="com.google.android"
+	moto="com.motorola"
+	apps_to_remove=(
+		"$moto.moto"
+		"$moto.help"
+		"$moto.timeweatherwidget"
+		"$moto.motodisplay"
+		"$moto.genie"
+		"$moto.brapps"
+		"$moto.fmplayer"
+		"$google.dialer"
+		"$google.contacts"
+		"$google.apps.messaging"
+		"$google.apps.photos"
+		"$google.calendar"
+		"$google.marvin.talkback"
+		"$google.apps.youtube.music"
+		"$google.calculator"
+		"$google.apps.tachyon"
+		"$google.videos"
+		"$google.apps.walletnfcrel"
+		"$google.apps.googleassistant"
+		"$google.projection.gearhead"
+		"$google.apps.subscriptions.red"
+		"$google.apps.nbu.files"
+	)
+	apk_list=$(
+		if [ -d apks/ ]
+		then
+			ls apks/
+		fi
+	)
+  #Permissions
 	perms=(
 		"android.permission"
 		"DUMP"						#1
@@ -25,21 +44,56 @@ a=($*)
 		"WRITE_MEDIA_STORAGE"		#4
 		"READ_EXTERNAL_STOTAGE"		#5
 		"WRITE_EXTERNAL_STOTAGE"	#6
+		"CAMERA"					#7
+		"CALL_PHONE"				#8
+		"READ_CONTACTS"				#9
+		"WRITE_CONTACTS"			#10
+		"READ_SMS"					#11
+		"RECEIVE_SMS"				#12
+		"RECEIVE_MMS"				#13
+		"SEND_SMS"					#14
+		"FOREGROUND_SERVICE"		#15
+		"GET_ACCOUNTS"				#16
+		"PROCESS_OUTGOING_CALLS"	#17
+		"READ_CALL_LOG"				#18
+		"READ_PHONE_STATE"			#19
+		"RECORD_AUDIO"				#20
+		"WRITE_CALL_LOG"			#21
+		"ADD_VOICEMAIL"				#22
+		
 	)
-	deps=(
+	sms_perms="5 6 7 8 9 10 11 12 13 14"
+	call_perms="15 16 17 18 19 20 21 22"
+  #Termux
+	notify_tags=""
+	termux_deps=(
 		android-tools
+		openssh
 		termux-api
 		man
 	)
-	apk_list=$(
-		if [ -d apks/ ]
-		then
-			ls apks/
-		fi
-	)
+	out_file=".temp"
+
+## COMMANDS ##
+  #Standard
+	rm="rm -rf"
+  #Adb Shell
+	ash="adb shell"
+	sett="$ash settings put"
+	dpi="$ash wm density"
+  #Package Manager
+	pm_grant="$ash pm grant"
+	pm_install="adb install"
+	app_on="$ash pm enable"
+	app_off="$ash pm disable-user"
+	app_rm="$ash pm uninstall -k --user 0"
+  #Termux
+	pm="apt"
+	notify="termux-notification $notify_tags --title"
+	pmup="$pm update ; $pm upgrade "
 }
 start(){
-load_data $* #[i]: Load all program data
+load_data $*
 	touch $out_file
 	if [ -z $1 ]
 	then
@@ -56,7 +110,6 @@ load_data $* #[i]: Load all program data
 }
 
 #Program Functions
-#[i]: Break the program into independent steps and create functions for them.
 live_shell(){
 	while [ 1 ]
 	do
@@ -64,9 +117,16 @@ live_shell(){
 		$cmd
 	done
 }
+bloat_rm(){
+	for app in ${apps_to_remove[*]}
+	do
+		$app_off $app
+		$app_rm $app
+	done
+}
 termux_config(){
 	$pmup
-	for pkg in ${deps[*]}
+	for pkg in ${termux_deps[*]}
 	do
 		$pm install $pkg -y
 	done
@@ -75,7 +135,7 @@ termux_config(){
 	$notify "Termux Configurado 👍"
 }
 set_perm(){
-sp_a=($*) #standard arguents alocation
+sp_a=($*)
 	for i in ${sp_a[@]:1}
 	do
 		$pm_grant $1 "${perms[0]}.${perms[$i]}" 2> $out_file
@@ -107,11 +167,15 @@ put_settings(){
 	$sett global animator_duration_scale 1.05
 }
 setup_apps(){
+	bloat_rm
 	set_perm "com.foxdebug.acode" 4
 	set_perm "io.github.muntashirakon.setedit" 2
 	set_perm "com.asdoi.quicktiles" 1 2
 	set_perm "com.zacharee1.systemuituner" 1 2
 	set_perm "com.cannic.apps.automaticdarktheme" 2 4 5 6
+	set_perm "com.android.messaging" $sms_perms
+	set_perm "com.android.dialer" $sms_perms $call_perms
+	
 }
 
 #Program Start Function
