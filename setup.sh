@@ -1,4 +1,5 @@
 #!/bin/bash
+### Core Functions ###
 load_data(){
 a=($*)
 ## REFEREMCES ##
@@ -20,7 +21,7 @@ a=($*)
 		"$google.calendar"
 		"$google.marvin.talkback"
 		"$google.apps.youtube.music"
-		"$google.calculator"
+		#"$google.calculator"
 		"$google.apps.tachyon"
 		"$google.videos"
 		"$google.apps.walletnfcrel"
@@ -29,6 +30,15 @@ a=($*)
 		"$google.apps.subscriptions.red"
 		"$google.apps.nbu.files"
 	)
+	apps_to_disable=(
+		"org.lineageos.recorder"
+		"com.simplemobiletools.flashlight"
+		"com.ap.transmission.btc"
+		"eu.depau.etchdroid"
+		"net.imknown.android.forefrontinfo"
+		"com.zacharee1.systemuituner"
+		"io.github.muntashirakon.setedit"
+	)
 	apk_list=$(
 		if [ -d apks/ ]
 		then
@@ -36,6 +46,8 @@ a=($*)
 		fi
 	)
   #Permissions
+	sms_perms="5 6 7 8 9 10 11 12 13 14"
+	call_perms=" $sms_perms 15 16 17 18 19 20 21 22"
 	perms=(
 		"android.permission"
 		"DUMP"						#1
@@ -62,17 +74,17 @@ a=($*)
 		"ADD_VOICEMAIL"				#22
 		
 	)
-	sms_perms="5 6 7 8 9 10 11 12 13 14"
-	call_perms="15 16 17 18 19 20 21 22"
   #Termux
 	notify_tags=""
+	bkp_dir="~/storage/shared/Projetos/Android_Setup"
+	out_file=".temp"
 	termux_deps=(
 		android-tools
 		openssh
 		termux-api
 		man
+		exa
 	)
-	out_file=".temp"
 
 ## COMMANDS ##
   #Standard
@@ -109,48 +121,17 @@ load_data $*
 	fi
 }
 
-#Program Functions
-live_shell(){
-	while [ 1 ]
-	do
-		read -p "Live: " cmd
-		$cmd
-	done
-}
-bloat_rm(){
-	for app in ${apps_to_remove[*]}
-	do
-		$app_off $app
-		$app_rm $app
-	done
-}
-termux_config(){
-	$pmup
-	for pkg in ${termux_deps[*]}
-	do
-		$pm install $pkg -y
-	done
-	termux-setup-storage
-	termux-api-start
-	$notify "Termux Configurado 👍"
-}
-set_perm(){
-sp_a=($*)
-	for i in ${sp_a[@]:1}
-	do
-		$pm_grant $1 "${perms[0]}.${perms[$i]}" 2> $out_file
-		echo "[$1 : ${perms[$i]}]"
-	done
-	
-}
-install_apps(){
-	cd apks
-	for i in ${apk_list[*]}
-	do
-		$pm_install "$i"
-	done
-	cd ..
-	$rm apks/
+### Program Functions ###
+#Config functions
+setup_apps(){
+	set_perm "com.foxdebug.acode" 4
+	set_perm "io.github.muntashirakon.setedit" 2
+	set_perm "com.asdoi.quicktiles" 1 2
+	set_perm "com.zacharee1.systemuituner" 1 2
+	set_perm "com.cannic.apps.automaticdarktheme" 2 4 5 6
+	set_perm "com.android.messaging" $sms_perms
+	set_perm "com.android.dialer" $call_perms
+	bloat_rm
 }
 put_settings(){
 #	$dpi 280
@@ -166,18 +147,53 @@ put_settings(){
 	$sett global transition_animation_scale 1.05
 	$sett global animator_duration_scale 1.05
 }
-setup_apps(){
-	bloat_rm
-	set_perm "com.foxdebug.acode" 4
-	set_perm "io.github.muntashirakon.setedit" 2
-	set_perm "com.asdoi.quicktiles" 1 2
-	set_perm "com.zacharee1.systemuituner" 1 2
-	set_perm "com.cannic.apps.automaticdarktheme" 2 4 5 6
-	set_perm "com.android.messaging" $sms_perms
-	set_perm "com.android.dialer" $sms_perms $call_perms
-	
+
+#Process functions
+live_shell(){
+	while [ 1 ]
+	do
+		read -p "Live: " cmd
+		$cmd
+	done
+}
+bloat_rm(){
+	for app in ${apps_to_remove[*]}
+	do
+		$app_off $app
+		$app_rm $app
+	done
+	for app in ${apps_to_disable[*]}
+	do
+		$app_off $app
+	done
+}
+termux_config(){
+	$pmup
+	for pkg in ${termux_deps[*]}
+	do
+		$pm install $pkg -y
+	done
+	termux-setup-storage
+	cp $bkp_dir/bashrc ~/.bashrc
+	termux-api-start
+	$notify "Termux Configurado 👍"
+}
+set_perm(){
+sp_a=($*)
+	for i in ${sp_a[@]:1}
+	do
+		$pm_grant $1 "${perms[0]}.${perms[$i]}" 2> $out_file
+		echo "[$1 : ${perms[$i]}]"
+	done
+}
+install_apps(){
+	cd apks
+	for i in ${apk_list[*]}
+	do
+		$pm_install "$i"
+	done
+	cd ..
+	$rm apks/
 }
 
-#Program Start Function
-#[i]: Starts the program after functions, variables and arguments are loaded.
-start $*
+start $* #Start of the program
