@@ -6,6 +6,7 @@ a=($*)
   #Apps
 	google="com.google.android"
 	moto="com.motorola"
+	apk_dir="apks"
 	apps_to_remove=(
 		"$moto.moto"
 		"$moto.help"
@@ -14,14 +15,15 @@ a=($*)
 		"$moto.genie"
 		"$moto.brapps"
 		"$moto.fmplayer"
-		"$google.dialer"
-		"$google.contacts"
-		"$google.apps.messaging"
+		"$moto.ccc.notification"
+#		"$google.dialer"
+#		"$google.contacts"
+#		"$google.apps.messaging"
 		"$google.apps.photos"
-		"$google.calendar"
-		"$google.marvin.talkback"
+#		"$google.calendar"
+#		"$google.marvin.talkback"
 		"$google.apps.youtube.music"
-		#"$google.calculator"
+#		"$google.calculator"
 		"$google.apps.tachyon"
 		"$google.videos"
 		"$google.apps.walletnfcrel"
@@ -29,6 +31,8 @@ a=($*)
 		"$google.projection.gearhead"
 		"$google.apps.subscriptions.red"
 		"$google.apps.nbu.files"
+		"com.facebook.services"
+		"com.facebook"
 	)
 	apps_to_disable=(
 		"org.lineageos.recorder"
@@ -38,16 +42,17 @@ a=($*)
 		"net.imknown.android.forefrontinfo"
 		"com.zacharee1.systemuituner"
 		"io.github.muntashirakon.setedit"
+		"com.android.stk"
 	)
 	apk_list=$(
-		if [ -d apks/ ]
+		if [ -d $apk_dir/ ]
 		then
-			ls apks/
+			ls $apk_dir/
 		fi
 	)
   #Permissions
 	sms_perms="5 6 7 8 9 10 11 12 13 14"
-	call_perms=" $sms_perms 15 16 17 18 19 20 21 22"
+	call_perms=" $sms_perms 15 16 17 18 19 20 21"
 	perms=(
 		"android.permission"
 		"DUMP"						#1
@@ -71,19 +76,17 @@ a=($*)
 		"READ_PHONE_STATE"			#19
 		"RECORD_AUDIO"				#20
 		"WRITE_CALL_LOG"			#21
-		"ADD_VOICEMAIL"				#22
-		
 	)
   #Termux
 	notify_tags=""
-	bkp_dir="~/storage/shared/Projetos/Android_Setup"
+	bkp_dir="$HOME/storage/shared/Projetos/Android_Setup"
 	out_file=".temp"
 	termux_deps=(
-		android-tools
-		openssh
-		termux-api
-		man
-		exa
+		"android-tools"
+		"openssh"
+		"termux-api"
+		"man"
+		"exa"
 	)
 
 ## COMMANDS ##
@@ -102,18 +105,22 @@ a=($*)
   #Termux
 	pm="apt"
 	notify="termux-notification $notify_tags --title"
-	pmup="$pm update ; $pm upgrade "
+	pmup="$pm update ; $pm upgrade -y"
 }
 start(){
 load_data $*
 	touch $out_file
 	if [ -z $1 ]
 	then
-		termux_config
+#		termux_setup
 		install_apps
 		setup_apps
+		remove_bloat
 		put_settings
-	elif [ $1 = "l" ]
+	elif [ $1 = "-ts" ]
+	then
+		termux_setup
+	elif [ $1 = "-l" ]
 	then
 		live_shell
 	else
@@ -129,23 +136,28 @@ setup_apps(){
 	set_perm "com.asdoi.quicktiles" 1 2
 	set_perm "com.zacharee1.systemuituner" 1 2
 	set_perm "com.cannic.apps.automaticdarktheme" 2 4 5 6
-	set_perm "com.android.messaging" $sms_perms
-	set_perm "com.android.dialer" $call_perms
-	bloat_rm
+	set_perm "com.mixplorer" 5 6
+#	set_perm "com.android.messaging" $sms_perms
+#	set_perm "com.android.dialer" $call_perms
 }
 put_settings(){
-#	$dpi 280
 	$sett global device_name "MotoPhone"
 	$sett secure bluetooth_name "MoTooth"
 	$sett global private_dns_specifier "dns.adguard.com"
 	$sett global private_dns_mode "on"
-	$sett secure I’m "Matheus Dias"
+	$sett secure me "Matheus Dias"
 	$sett secure qs_auto_tiles 0
-	$sett secure sysui_qqs_count 5
-	$sett secure sysui_rounded_content_padding 21
+#	$sett secure sysui_qqs_count 5
+#	$sett secure sysui_rounded_content_padding 21
 	$sett global window_animation_scale 1.05
 	$sett global transition_animation_scale 1.05
 	$sett global animator_duration_scale 1.05
+	$sett secure install_non_market_apps 1
+	$sett lock_screen_show_silent_notifications 1
+	$sett qs_auto_tiles 0
+	$sett secure_frp_mode 1
+	$sett development_settings_enabled 0
+	$sett adb_enabled 1
 }
 
 #Process functions
@@ -156,7 +168,7 @@ live_shell(){
 		$cmd
 	done
 }
-bloat_rm(){
+remove_bloat(){
 	for app in ${apps_to_remove[*]}
 	do
 		$app_off $app
@@ -167,16 +179,16 @@ bloat_rm(){
 		$app_off $app
 	done
 }
-termux_config(){
+termux_setup(){
 	$pmup
 	for pkg in ${termux_deps[*]}
 	do
 		$pm install $pkg -y
 	done
 	termux-setup-storage
-	cp $bkp_dir/bashrc ~/.bashrc
+	cp -r $bkp_dir/* ~/
 	termux-api-start
-	$notify "Termux Configurado 👍"
+	$notify "📱: Ambiente Configurado"
 }
 set_perm(){
 sp_a=($*)
