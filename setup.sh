@@ -15,15 +15,14 @@ a=($*)
 		"$moto.genie"
 		"$moto.brapps"
 		"$moto.fmplayer"
-		"$moto.ccc.notification"
 #		"$google.dialer"
 #		"$google.contacts"
 #		"$google.apps.messaging"
 		"$google.apps.photos"
-#		"$google.calendar"
-#		"$google.marvin.talkback"
+		"$google.calendar"
+		"$google.marvin.talkback"
 		"$google.apps.youtube.music"
-#		"$google.calculator"
+		"$google.calculator"
 		"$google.apps.tachyon"
 		"$google.videos"
 		"$google.apps.walletnfcrel"
@@ -31,8 +30,6 @@ a=($*)
 		"$google.projection.gearhead"
 		"$google.apps.subscriptions.red"
 		"$google.apps.nbu.files"
-		"com.facebook.services"
-		"com.facebook"
 	)
 	apps_to_disable=(
 		"org.lineageos.recorder"
@@ -42,7 +39,6 @@ a=($*)
 		"net.imknown.android.forefrontinfo"
 		"com.zacharee1.systemuituner"
 		"io.github.muntashirakon.setedit"
-		"com.android.stk"
 	)
 	apk_list=$(
 		if [ -d $apk_dir/ ]
@@ -103,16 +99,15 @@ a=($*)
 	app_off="$ash pm disable-user"
 	app_rm="$ash pm uninstall -k --user 0"
   #Termux
-	pm="apt"
+	pm="pkg"
 	notify="termux-notification $notify_tags --title"
-	pmup="$pm update ; $pm upgrade -y"
+	pmup="$pm update ; $pm upgrade"
 }
 start(){
 load_data $*
 	touch $out_file
 	if [ -z $1 ]
 	then
-#		termux_setup
 		install_apps
 		setup_apps
 		remove_bloat
@@ -137,26 +132,28 @@ setup_apps(){
 	set_perm "com.zacharee1.systemuituner" 1 2
 	set_perm "com.cannic.apps.automaticdarktheme" 2 4 5 6
 	set_perm "com.mixplorer" 5 6
-#	set_perm "com.android.messaging" $sms_perms
-#	set_perm "com.android.dialer" $call_perms
+	set_perm "com.android.messaging" $sms_perms
+	set_perm "com.android.dialer" $call_perms
 }
 put_settings(){
+#	$dpi 280
 	$sett global device_name "MotoPhone"
 	$sett secure bluetooth_name "MoTooth"
 	$sett global private_dns_specifier "dns.adguard.com"
 	$sett global private_dns_mode "on"
 	$sett secure me "Matheus Dias"
 	$sett secure qs_auto_tiles 0
-#	$sett secure sysui_qqs_count 5
-#	$sett secure sysui_rounded_content_padding 21
+	$sett secure sysui_qqs_count 5
+	$sett secure sysui_rounded_content_padding 21
 	$sett global window_animation_scale 1.05
 	$sett global transition_animation_scale 1.05
 	$sett global animator_duration_scale 1.05
 	$sett secure install_non_market_apps 1
 	$sett lock_screen_show_silent_notifications 1
+	$sett lockscreen.options 0
 	$sett qs_auto_tiles 0
 	$sett secure_frp_mode 1
-	$sett development_settings_enabled 0
+	$sett development_settings_enabled 1
 	$sett adb_enabled 1
 }
 
@@ -186,7 +183,8 @@ termux_setup(){
 		$pm install $pkg -y
 	done
 	termux-setup-storage
-	cp -r $bkp_dir/* ~/
+	cp -r $bkp_dir/bashrc ~/.bashrc
+	cp -r $bkp_dir/bmods ~/.bmods
 	termux-api-start
 	$notify "📱: Ambiente Configurado"
 }
