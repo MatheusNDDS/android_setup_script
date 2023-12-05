@@ -1,13 +1,13 @@
 #!/bin/bash
-### Custom props ###
-## User variables
+### Exposed Configs ###
+#variables
 google="com.google.android"
 fb="com.facebook"
 moto="com.motorola"
 sms_permissions="5 6 7 8 9 10 11 12 13 14"
 call_permissions="$sms_permissions 15 16 17 18 19 20 21"
 
-## lists
+#lists
 apps_to_remove=(
 	"$moto.help"
 	"$moto.genie"
@@ -75,7 +75,7 @@ permissions=(
 	"UPDATE_PACKAGES_WITHOUT_USER_ACTION" #23
 )
 
-## Configurations
+#Configurations
 set_apps(){
 	set_perm "com.foxdebug.acode" 4
 	set_perm "org.fdroid.fdroid" 22 23
@@ -122,8 +122,8 @@ put_settings(){
 	$sett global force_resizable_activities 1
 }
 
-### ⚠ Script Functions ###
-#** Edit this section carefully **
+### WSH standard ###
+#Core Functions
 load_data(){
 a=($*)
 ## REFEREMCES ##
@@ -168,7 +168,7 @@ a=($*)
 	notify="termux-notification $notify_tags --title"
 	pmup="$pm update ; $pm upgrade -y"
 }
-start(){
+setup_init(){
 load_data $*
 	touch $out_file
 	if [[ -z $1 ]]
@@ -188,6 +188,8 @@ load_data $*
 		$1 ${a[@]:1}
 	fi
 }
+
+#Program Functions
 live_shell(){
 	while [ 1 ]
 	do
@@ -235,4 +237,4 @@ install_apps(){
 	$rm apks/
 }
 
-start $* #Start of the program
+setup_init $* #Program Start
